@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fdf7653c66cd65488abe84489332ccc, type: 3}
+  m_Name: Testing
+  m_EditorClassIdentifier: 
+  SortingPriority: 0
+  ObjectType: 2
+  Static: {fileID: 0}
+  Up: {fileID: 0}
+  Down: {fileID: 0}
+  Left: {fileID: 0}
+  Right: {fileID: 0}
+  BlendSprites: 0
+  TopLeft: {fileID: 0}
+  Top: {fileID: 0}
+  TopRight: {fileID: 0}
+  MiddleLeft: {fileID: 0}
+  Middle: {fileID: 0}
+  MiddleRight: {fileID: 0}
+  BottomLeft: {fileID: 0}
+  Bottom: {fileID: 0}
+  BottomRight: {fileID: 0}
