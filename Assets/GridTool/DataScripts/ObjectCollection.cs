@@ -17,6 +17,11 @@ namespace GridTool.DataScripts
             return Texture2D.blackTexture;
         }
 
+        public ObjectData GetObject(string objName)
+        {
+            return Objects.FirstOrDefault(obj => obj.Name == objName);
+        }
+
         public void CheckValid()
         {
             Objects = Objects.Where(obj => obj != null).ToList();
