@@ -6,8 +6,8 @@ namespace GridTool.Scripts
     public class ObjectData : ScriptableObject
     {
         [Header("Object Properties")]
-        public string Name;
-        public int SortingPriority;
+        public string Name = "";
+        public int SortingPriority = 1;
         public Color MixColor = Color.white;
 
         [Header("Sprite Properties")]
@@ -20,5 +20,11 @@ namespace GridTool.Scripts
         public Sprite[] Down = { null };
         public Sprite[] Left = { null };
         // Sprite right == Static Sprite
+    }
+
+    public enum ObjectSpriteType
+    {
+        Static,
+        Directional,
     }
 }
