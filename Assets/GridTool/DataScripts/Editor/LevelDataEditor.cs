@@ -1,10 +1,10 @@
 #if UNITY_EDITOR
-using GridTool.Scripts;
-using GridTool.Scripts.GUI;
+using GridTool.DataScripts;
+using GridTool.DataScripts.GUI;
 using UnityEditor;
 using UnityEngine;
 
-namespace Assets.GridTool.Scripts.Editor
+namespace Assets.GridTool.DataScripts.Editor
 {
     [CustomEditor(typeof(LevelData), true)]
     public class LevelDataEditor : UnityEditor.Editor

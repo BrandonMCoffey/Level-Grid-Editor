@@ -1,8 +1,7 @@
 using System;
-using System.Linq;
 using UnityEngine;
 
-namespace GridTool.Scripts
+namespace GridTool.DataScripts
 {
     [CreateAssetMenu]
     public class LevelData : ScriptableObject
@@ -13,6 +12,7 @@ namespace GridTool.Scripts
         public int Height = 5;
 
         [Header("Level")]
+        public ObjectCollection Collection;
         [TextArea] public string LevelString = "";
         public LevelObjectData[,] Level;
 
@@ -41,7 +41,7 @@ namespace GridTool.Scripts
                             }
                         }
                         return;
-                    } catch (Exception e) {
+                    } catch {
                         Console.WriteLine("Invalid level string");
                         LevelString = "";
                     }

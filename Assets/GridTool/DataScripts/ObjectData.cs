@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GridTool.Scripts
+namespace GridTool.DataScripts
 {
     [CreateAssetMenu]
     public class ObjectData : ScriptableObject
@@ -15,6 +15,7 @@ namespace GridTool.Scripts
         public int SpriteAnimationFrames = 1;
 
         [Header("Sprites")]
+        public Texture2D Texture;
         public Sprite[] Static = { null };
         public Sprite[] Up = { null };
         public Sprite[] Down = { null };

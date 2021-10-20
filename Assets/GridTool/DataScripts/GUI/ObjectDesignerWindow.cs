@@ -1,8 +1,9 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
+using Texture2D = UnityEngine.Texture2D;
 
-namespace GridTool.Scripts.GUI
+namespace GridTool.DataScripts.GUI
 {
     public class ObjectDesignerWindow : EditorWindow
     {
@@ -63,10 +64,8 @@ namespace GridTool.Scripts.GUI
 
         private void InitData()
         {
-            if (_objectData == null) {
-                _objectData = (ObjectData)ScriptableObject.CreateInstance(typeof(ObjectData));
-                _overrideData = null;
-            }
+            _objectData = (ObjectData)ScriptableObject.CreateInstance(typeof(ObjectData));
+            _overrideData = null;
         }
 
         #endregion
@@ -175,6 +174,11 @@ namespace GridTool.Scripts.GUI
             EditorGUILayout.Separator();
 
             EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Base Texture");
+            _objectData.Texture = (Texture2D)EditorGUILayout.ObjectField(_objectData.Texture, typeof(Texture2D), false);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Sorting Priority");
             _objectData.SortingPriority = EditorGUILayout.IntField(_objectData.SortingPriority);
             EditorGUILayout.EndHorizontal();
@@ -204,6 +208,7 @@ namespace GridTool.Scripts.GUI
                 if (GUILayout.Button("Save Asset", GUILayout.Height(40))) {
                     // TODO: Better way to copy information
                     _overrideData.Name = _objectData.Name;
+                    _overrideData.Texture = _objectData.Texture;
                     _overrideData.SortingPriority = _objectData.SortingPriority;
                     _overrideData.SpriteType = _objectData.SpriteType;
                     _overrideData.SpriteAnimationFrames = _objectData.SpriteAnimationFrames;
@@ -224,8 +229,15 @@ namespace GridTool.Scripts.GUI
                     string path = "Assets" + fullPath.Remove(0, projectPath.Length);
                     Debug.Log(fullPath);
                     AssetDatabase.CreateAsset(_objectData, path + "/" + _objectData.Name + ".asset");
+                    ClearDesigner();
                 }
             }
+        }
+
+        private void ClearDesigner()
+        {
+            _objectData = null;
+            InitData();
         }
 
         #endregion

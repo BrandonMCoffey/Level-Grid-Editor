@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-namespace GridTool.Scripts.GUI
+namespace GridTool.DataScripts.GUI
 {
     public class LevelDesignerWindow : EditorWindow
     {
@@ -20,7 +20,12 @@ namespace GridTool.Scripts.GUI
         private static LevelData _loadLevelData;
         private static LevelData _overrideData;
 
+        private static ObjectData _selectedObject;
+
         private static string _lastPath = "";
+
+        private static int _minPixels = 32;
+        private static int _maxPixels = 128;
 
         private static int _maxWidth = 20;
         private static int _maxHeight = 16;
@@ -64,10 +69,8 @@ namespace GridTool.Scripts.GUI
 
         private void InitData()
         {
-            if (_levelData == null) {
-                _levelData = (LevelData)ScriptableObject.CreateInstance(typeof(LevelData));
-                _overrideData = null;
-            }
+            _levelData = (LevelData)ScriptableObject.CreateInstance(typeof(LevelData));
+            _overrideData = null;
         }
 
         #endregion
@@ -162,16 +165,29 @@ namespace GridTool.Scripts.GUI
         {
             GUILayout.BeginArea(_mainSection);
 
-            GUILayout.BeginHorizontal();
-            _levelData.CheckValid();
-            for (int x = 0; x < _levelData.Width; x++) {
-                GUILayout.BeginVertical();
-                for (int y = 0; y < _levelData.Height; y++) {
-                    _levelData.Level[x, y].Name = GUILayout.TextField(_levelData.Get(x, y).Name, GUILayout.MinWidth(0));
+            if (_levelData.Collection != null) {
+                _levelData.CheckValid();
+                int width = _levelData.Width;
+                int size = Mathf.RoundToInt(Mathf.Clamp((_mainSection.width - 4 * width) / width, _minPixels, _maxPixels));
+
+                GUILayout.BeginHorizontal();
+                for (int x = 0; x < width; x++) {
+                    GUILayout.BeginVertical();
+                    for (int y = 0; y < _levelData.Height; y++) {
+                        string objName = _levelData.Level[x, y].Name;
+                        if (GUILayout.Button(_levelData.Collection.GetTexture(objName), GUILayout.Width(size), GUILayout.Height(size))) {
+                            if (_selectedObject != null) {
+                                _levelData.Level[x, y].Name = _selectedObject.Name;
+                            } else {
+                                _levelData.Level[x, y].Name = "";
+                            }
+                        }
+                        //_levelData.Level[x, y].Name = GUILayout.TextField(_levelData.Get(x, y).Name, GUILayout.MinWidth(0));
+                    }
+                    GUILayout.EndVertical();
                 }
-                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
             }
-            GUILayout.EndHorizontal();
 
             GUILayout.EndArea();
         }
@@ -206,10 +222,36 @@ namespace GridTool.Scripts.GUI
             EditorGUILayout.Separator();
 
             GUILayout.Label("Objects");
-            EditorGUILayout.Separator();
+            _levelData.Collection = (ObjectCollection)EditorGUILayout.ObjectField(_levelData.Collection, typeof(ObjectCollection), false);
 
-            GUILayout.Label("Temp Object");
+            if (_levelData.Collection != null) {
+                EditorGUILayout.Separator();
 
+                _levelData.Collection.CheckValid();
+                int size = Mathf.RoundToInt(Mathf.Clamp((_objectSection.width - 16) / 4, _minPixels, _maxPixels));
+
+                GUILayout.BeginVertical();
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button(Texture2D.blackTexture, GUILayout.Width(size), GUILayout.Height(size))) {
+                    _selectedObject = null;
+                }
+                int horz = 1;
+                foreach (var obj in _levelData.Collection.Objects) {
+                    if (GUILayout.Button(obj.Texture, GUILayout.Width(size), GUILayout.Height(size))) {
+                        _selectedObject = obj;
+                    }
+                    horz++;
+                    if (horz >= 4) {
+                        horz = 0;
+                        GUILayout.EndHorizontal();
+                        GUILayout.BeginHorizontal();
+                    }
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
+            } else {
+                EditorGUILayout.HelpBox("Please specify an [Object Collection] for this level.", MessageType.Error);
+            }
 
             EditorGUILayout.Separator();
             EditorGUILayout.Separator();
@@ -244,11 +286,17 @@ namespace GridTool.Scripts.GUI
                     }
                     _lastPath = fullPath;
                     string path = "Assets" + fullPath.Remove(0, projectPath.Length);
-                    Debug.Log(fullPath);
                     _levelData.SaveLevel();
                     AssetDatabase.CreateAsset(_levelData, path + "/" + _levelData.Name + ".asset");
+                    ClearDesigner();
                 }
             }
+        }
+
+        private void ClearDesigner()
+        {
+            _levelData = null;
+            InitData();
         }
 
         #endregion

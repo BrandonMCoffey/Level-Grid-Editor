@@ -1,11 +1,8 @@
-using JetBrains.Annotations;
-using UnityEngine;
-
-namespace GridTool.Scripts
+namespace GridTool.DataScripts
 {
     public struct LevelObjectData
     {
-        public string DisplayName => string.IsNullOrEmpty(Name) ? "Empty" : Name;
+        public string DisplayName => string.IsNullOrEmpty(Name) ? "-" : Name;
         public string Name { get; set; }
 
         public LevelObjectData(string name)
