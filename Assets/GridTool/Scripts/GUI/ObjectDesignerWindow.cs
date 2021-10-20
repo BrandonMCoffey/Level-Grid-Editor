@@ -31,7 +31,6 @@ namespace GridTool.Scripts.GUI
         {
             ObjectDesignerWindow window = (ObjectDesignerWindow)GetWindow(typeof(ObjectDesignerWindow), false, "Object Designer");
             window.minSize = new Vector2(500, 500);
-            _objectData = (ObjectData)ScriptableObject.CreateInstance(typeof(ObjectData));
             window.Show();
         }
 
@@ -39,9 +38,9 @@ namespace GridTool.Scripts.GUI
         {
             ObjectDesignerWindow window = (ObjectDesignerWindow)GetWindow(typeof(ObjectDesignerWindow), false, "Object Designer");
             window.minSize = new Vector2(500, 500);
-            _objectData = ScriptableObject.Instantiate(data);
             _overrideData = data;
             window.Show();
+            _objectData = ScriptableObject.Instantiate(data);
         }
 
         private void OnEnable()

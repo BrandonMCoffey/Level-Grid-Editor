@@ -39,9 +39,9 @@ namespace GridTool.Scripts.GUI
         {
             LevelDesignerWindow window = (LevelDesignerWindow)GetWindow(typeof(LevelDesignerWindow), false, "Level Designer");
             window.minSize = new Vector2(800, 500);
-            _levelData = ScriptableObject.Instantiate(data);
             _overrideData = data;
             window.Show();
+            _levelData = ScriptableObject.Instantiate(data);
         }
 
         private void OnEnable()
@@ -163,10 +163,11 @@ namespace GridTool.Scripts.GUI
             GUILayout.BeginArea(_mainSection);
 
             GUILayout.BeginHorizontal();
-            for (int x = 0; x < _levelData.Level.GetLength(0); x++) {
+            _levelData.CheckValid();
+            for (int x = 0; x < _levelData.Width; x++) {
                 GUILayout.BeginVertical();
-                for (int y = 0; y < _levelData.Level.GetLength(1); y++) {
-                    _levelData.Level[x, y] = GUILayout.TextField(_levelData.Level[x, y], GUILayout.MinWidth(0));
+                for (int y = 0; y < _levelData.Height; y++) {
+                    _levelData.Level[x, y].Name = GUILayout.TextField(_levelData.Get(x, y).Name, GUILayout.MinWidth(0));
                 }
                 GUILayout.EndVertical();
             }
@@ -199,21 +200,7 @@ namespace GridTool.Scripts.GUI
 
             w = Mathf.Clamp(w, 1, _maxWidth);
             h = Mathf.Clamp(h, 1, _maxHeight);
-            if (w != _levelData.Width || h != _levelData.Height) {
-                _levelData.Width = w;
-                _levelData.Height = h;
-                string[,] newArr = new string[w, h];
-                for (int x = 0; x < w; x++) {
-                    for (int y = 0; y < h; y++) {
-                        if (x < _levelData.Level.GetLength(0) && y < _levelData.Level.GetLength(1)) {
-                            newArr[x, y] = _levelData.Level[x, y];
-                        } else {
-                            newArr[x, y] = "";
-                        }
-                    }
-                }
-                _levelData.Level = newArr;
-            }
+            _levelData.CheckValid(w, h);
 
             EditorGUILayout.Separator();
             EditorGUILayout.Separator();
@@ -245,6 +232,7 @@ namespace GridTool.Scripts.GUI
                     _overrideData.Width = _levelData.Width;
                     _overrideData.Height = _levelData.Height;
                     _overrideData.Level = _levelData.Level;
+                    _overrideData.SaveLevel();
                 }
                 EditorGUILayout.ObjectField(_overrideData, typeof(ObjectData), false);
             } else {
@@ -257,6 +245,7 @@ namespace GridTool.Scripts.GUI
                     _lastPath = fullPath;
                     string path = "Assets" + fullPath.Remove(0, projectPath.Length);
                     Debug.Log(fullPath);
+                    _levelData.SaveLevel();
                     AssetDatabase.CreateAsset(_levelData, path + "/" + _levelData.Name + ".asset");
                 }
             }

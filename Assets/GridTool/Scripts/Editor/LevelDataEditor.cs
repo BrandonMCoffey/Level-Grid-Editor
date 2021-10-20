@@ -17,11 +17,11 @@ namespace Assets.GridTool.Scripts.Editor
 
             EditorGUILayout.Separator();
             GUILayout.BeginHorizontal();
-            for (int w = data.Level.GetLength(0) - 1; w >= 0; w--) {
+            data.CheckValid();
+            for (int w = 0; w < data.Width; w++) {
                 GUILayout.BeginVertical();
-                for (int h = 0; h < data.Level.GetLength(1); h++) {
-                    string value = data.Level[w, h];
-                    GUILayout.Label(string.IsNullOrEmpty(value) ? "Empty" : value, GUILayout.MinWidth(0));
+                for (int h = 0; h < data.Height; h++) {
+                    GUILayout.Label(data.Get(w, h).DisplayName, GUILayout.MinWidth(0));
                 }
                 GUILayout.EndVertical();
             }
