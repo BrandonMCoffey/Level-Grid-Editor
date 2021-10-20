@@ -5,26 +5,20 @@ namespace GridTool.Scripts
     [CreateAssetMenu]
     public class ObjectData : ScriptableObject
     {
-        [Header("Tile Properties")]
+        [Header("Object Properties")]
+        public string Name;
         public int SortingPriority;
-        public ObjectSpriteType ObjectType;
-        [Header("Static Sprite")]
-        public Sprite Static;
-        [Header("Directional Sprites")]
-        public Sprite Up;
-        public Sprite Down;
-        public Sprite Left;
-        public Sprite Right;
-        [Header("Blendable Sprites")]
-        public bool BlendSprites = false;
-        public Sprite TopLeft;
-        public Sprite Top;
-        public Sprite TopRight;
-        public Sprite MiddleLeft;
-        public Sprite Middle;
-        public Sprite MiddleRight;
-        public Sprite BottomLeft;
-        public Sprite Bottom;
-        public Sprite BottomRight;
+        public Color MixColor = Color.white;
+
+        [Header("Sprite Properties")]
+        public ObjectSpriteType SpriteType;
+        public int SpriteAnimationFrames = 1;
+
+        [Header("Sprites")]
+        public Sprite[] Static = { null };
+        public Sprite[] Up = { null };
+        public Sprite[] Down = { null };
+        public Sprite[] Left = { null };
+        // Sprite right == Static Sprite
     }
 }

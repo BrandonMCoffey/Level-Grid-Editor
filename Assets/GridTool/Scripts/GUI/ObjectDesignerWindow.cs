@@ -1,4 +1,3 @@
-using System.Linq;
 using GridTool.Scripts;
 using UnityEditor;
 using UnityEngine;
@@ -6,23 +5,30 @@ using UnityEngine;
 public class ObjectDesignerWindow : EditorWindow
 {
     private Rect _headerSection;
-    private Texture2D _headerSectionTexture;
-    private Color _headerSectionColor = new Color(0.5f, 0.5f, 0.5f);
-
     private Rect _loadSection;
-
     private Rect _mainSection;
+    private Rect _spriteSection;
+
+    private Texture2D _headerSectionTexture;
     private Texture2D _mainSectionTexture;
+    private Color _headerSectionColor = new Color(0.5f, 0.5f, 0.5f);
     private Color _mainSectionColor = new Color(0.2f, 0.2f, 0.2f);
 
     private static ObjectData _objectData;
     private static ObjectData _loadObjectData;
+    private static ObjectData _overrideData;
+
+    private static string _lastPath = "";
+
+    private static int _maxAnimFrames = 5;
+
+    #region Initialization
 
     [MenuItem("Window/Object Designer")]
     private static void OpenWindow()
     {
         ObjectDesignerWindow window = (ObjectDesignerWindow)GetWindow(typeof(ObjectDesignerWindow));
-        window.minSize = new Vector2(320, 320);
+        window.minSize = new Vector2(500, 500);
         window.Show();
     }
 
@@ -49,6 +55,10 @@ public class ObjectDesignerWindow : EditorWindow
         _objectData = (ObjectData)ScriptableObject.CreateInstance(typeof(ObjectData));
     }
 
+    #endregion
+
+    #region Setup
+
     // Called once or more during interactions with user
     private void OnGUI()
     {
@@ -56,39 +66,53 @@ public class ObjectDesignerWindow : EditorWindow
         DrawHeader();
         DrawLoad();
         DrawMain();
+        DrawSprites();
     }
 
     // Defines rect values and paints textures
     private void DrawLayouts()
     {
-        int headerHeight = 50;
-        int loadWidth = 100;
-        int mainPadding = 10;
+        int headerHeight = 60;
+        int loadWidth = 160;
+        int halfPadding = 4;
+        int halfWidth = Screen.width / 2;
 
-        _headerSection.x = 0;
-        _headerSection.y = 0;
-        _headerSection.width = Screen.width - loadWidth;
-        _headerSection.height = headerHeight;
+        Rect headerFill = new Rect(0, 0, Screen.width, headerHeight);
 
-        _loadSection.x = Screen.width - loadWidth;
-        _loadSection.y = 0;
-        _loadSection.width = loadWidth;
-        _loadSection.height = headerHeight;
+        _headerSection.x = halfPadding * 2;
+        _headerSection.y = halfPadding * 2;
+        _headerSection.width = Screen.width - loadWidth - halfPadding * 3;
+        _headerSection.height = headerHeight - halfPadding * 4;
 
-        _mainSection.x = mainPadding;
-        _mainSection.y = headerHeight + mainPadding;
-        _mainSection.width = Screen.width - 2 * mainPadding;
-        _mainSection.height = Screen.height - headerHeight - 2 * mainPadding;
+        _loadSection.x = Screen.width - loadWidth + halfPadding;
+        _loadSection.y = halfPadding * 2;
+        _loadSection.width = loadWidth - halfPadding * 3;
+        _loadSection.height = headerHeight - halfPadding * 4;
 
-        GUI.DrawTexture(_headerSection, _headerSectionTexture);
-        GUI.DrawTexture(_loadSection, _headerSectionTexture);
+        _mainSection.x = halfPadding * 2;
+        _mainSection.y = headerHeight + halfPadding * 2;
+        _mainSection.width = halfWidth - halfPadding * 3;
+        _mainSection.height = Screen.height - headerHeight - halfPadding * 8;
+
+        _spriteSection.x = halfWidth + halfPadding;
+        _spriteSection.y = headerHeight + halfPadding * 2;
+        _spriteSection.width = halfWidth - halfPadding * 3;
+        _spriteSection.height = Screen.height - headerHeight - halfPadding * 8;
+
+        GUI.DrawTexture(headerFill, _headerSectionTexture);
         GUI.DrawTexture(_mainSection, _mainSectionTexture);
+        GUI.DrawTexture(_spriteSection, _mainSectionTexture);
     }
+
+    #endregion
+
+    #region Header
 
     private void DrawHeader()
     {
         GUILayout.BeginArea(_headerSection);
-        GUILayout.Label("Object Designer");
+        GUIStyle titleStyle = new GUIStyle { fontSize = 25, stretchHeight = true, alignment = TextAnchor.MiddleLeft };
+        GUILayout.Label(" Object Designer", titleStyle);
         GUILayout.EndArea();
     }
 
@@ -98,105 +122,179 @@ public class ObjectDesignerWindow : EditorWindow
         EditorGUILayout.BeginVertical();
         _loadObjectData = (ObjectData)EditorGUILayout.ObjectField(_loadObjectData, typeof(ObjectData), false);
         if (GUILayout.Button("Load Existing")) {
-            if (_loadObjectData != null) {
-                // Confirmation Popup
-                _objectData = ScriptableObject.Instantiate(_loadObjectData);
-            } else {
-                // Error Popup
-            }
+            LoadExistingAsset();
         }
         EditorGUILayout.EndVertical();
         GUILayout.EndArea();
     }
 
+    private void LoadExistingAsset()
+    {
+        if (_loadObjectData != null) {
+            _objectData = ScriptableObject.Instantiate(_loadObjectData);
+            _overrideData = _loadObjectData;
+            _loadObjectData = null;
+        } else {
+            //EditorUtility.OpenFilePanel("Select Existing Object", "", "asset");
+        }
+    }
+
+    #endregion
+
+    #region Main
+
     private void DrawMain()
     {
         GUILayout.BeginArea(_mainSection);
 
-        GUILayout.Label("Sprite Mode");
-        _objectData.ObjectType = (ObjectSpriteType)EditorGUILayout.EnumPopup(_objectData.ObjectType);
+        GUILayout.Label("Object Settings");
+        EditorGUILayout.Separator();
 
-        switch (_objectData.ObjectType) {
-            case ObjectSpriteType.Static:
-                DrawStaticSprite();
-                break;
-            case ObjectSpriteType.Directional:
-                DrawDirectionalSprites();
-                break;
-            case ObjectSpriteType.Blendable:
-                DrawBlendSprites();
-                break;
-        }
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Name");
+        _objectData.Name = EditorGUILayout.TextField(_objectData.Name);
+        EditorGUILayout.EndHorizontal();
 
-        GUILayout.Space(10);
-        GUILayout.Label("Settings");
+        EditorGUILayout.Separator();
+        EditorGUILayout.Separator();
+        GUILayout.Label("Visual Settings");
+        EditorGUILayout.Separator();
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Sorting Priority");
         _objectData.SortingPriority = EditorGUILayout.IntField(_objectData.SortingPriority);
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Mix Color");
+        _objectData.MixColor = EditorGUILayout.ColorField(_objectData.MixColor);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Separator();
+        EditorGUILayout.Separator();
+
+        if (string.IsNullOrEmpty(_objectData.Name)) {
+            EditorGUILayout.HelpBox("Please specify a [Name] for this object.", MessageType.Warning);
+        } else if (_objectData.Static[0] == null) {
+            EditorGUILayout.HelpBox("Please specify a [Sprite] for this object.", MessageType.Warning);
+        } else {
+            DrawCreateButton();
+        }
+
         GUILayout.EndArea();
     }
 
+    private void DrawCreateButton()
+    {
+        if (_overrideData != null) {
+            if (GUILayout.Button("Save Asset", GUILayout.Height(40))) {
+                // TODO: Better way to copy information
+                _overrideData.Name = _objectData.Name;
+                _overrideData.SortingPriority = _objectData.SortingPriority;
+                _overrideData.SpriteType = _objectData.SpriteType;
+                _overrideData.SpriteAnimationFrames = _objectData.SpriteAnimationFrames;
+                _overrideData.Static = _objectData.Static;
+                _overrideData.Up = _objectData.Up;
+                _overrideData.Down = _objectData.Down;
+                _overrideData.Left = _objectData.Left;
+            }
+            EditorGUILayout.ObjectField(_overrideData, typeof(ObjectData), false);
+        } else {
+            if (GUILayout.Button("Create", GUILayout.Height(40))) {
+                string projectPath = string.IsNullOrEmpty(_lastPath) ? Application.dataPath : _lastPath;
+                string fullPath = EditorUtility.OpenFolderPanel("Select folder to save " + _objectData.Name + " to", projectPath, "");
+                if (fullPath.Length < projectPath.Length) {
+                    return;
+                }
+                _lastPath = fullPath;
+                string path = "Assets" + fullPath.Remove(0, projectPath.Length);
+                Debug.Log(fullPath);
+                AssetDatabase.CreateAsset(_objectData, path + "/" + _objectData.Name + ".asset");
+            }
+        }
+    }
+
+    #endregion
+
     #region Sprites
 
-    private static void DrawStaticSprite()
+    private void DrawSprites()
     {
+        GUILayout.BeginArea(_spriteSection);
+
+        GUILayout.Label("Sprite Settings");
+        EditorGUILayout.Separator();
+
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Sprite");
-        _objectData.Static = (Sprite)EditorGUILayout.ObjectField(_objectData.Static, typeof(Sprite), false);
+        GUILayout.Label("Mode");
+        _objectData.SpriteType = (ObjectSpriteType)EditorGUILayout.EnumPopup(_objectData.SpriteType);
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Animation Frames");
+        int animFrames = EditorGUILayout.IntField(_objectData.SpriteAnimationFrames);
+        EditorGUILayout.EndHorizontal();
+
+        animFrames = Mathf.Clamp(animFrames, 1, _maxAnimFrames);
+        if (animFrames != _objectData.SpriteAnimationFrames) {
+            _objectData.SpriteAnimationFrames = animFrames;
+            _objectData.Static = ResizeSpriteArray(_objectData.Static, animFrames);
+            _objectData.Up = ResizeSpriteArray(_objectData.Up, animFrames);
+            _objectData.Down = ResizeSpriteArray(_objectData.Down, animFrames);
+            _objectData.Left = ResizeSpriteArray(_objectData.Left, animFrames);
+        }
+
+        EditorGUILayout.Separator();
+
+        switch (_objectData.SpriteType) {
+            case ObjectSpriteType.Static:
+                _objectData.Static = DrawSpriteArray(_objectData.Static);
+                break;
+            case ObjectSpriteType.Directional:
+                GUILayout.Label("Facing Upwards");
+                _objectData.Up = DrawSpriteArray(_objectData.Up);
+                EditorGUILayout.Separator();
+                GUILayout.Label("Facing Downwards");
+                _objectData.Down = DrawSpriteArray(_objectData.Down);
+                EditorGUILayout.Separator();
+                GUILayout.Label("Facing Left");
+                _objectData.Left = DrawSpriteArray(_objectData.Left);
+                EditorGUILayout.Separator();
+                GUILayout.Label("Facing Right");
+                _objectData.Static = DrawSpriteArray(_objectData.Static);
+                break;
+        }
+
+        GUILayout.EndArea();
     }
 
-    private static void DrawDirectionalSprites()
+    private Sprite[] ResizeSpriteArray(Sprite[] arr, int size)
     {
-        EditorGUILayout.BeginVertical();
-
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("", GUILayout.MinWidth(0));
-        _objectData.Up = (Sprite)EditorGUILayout.ObjectField(_objectData.Up, typeof(Sprite), false);
-        EditorGUILayout.LabelField("", GUILayout.MinWidth(0));
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        _objectData.Left = (Sprite)EditorGUILayout.ObjectField(_objectData.Left, typeof(Sprite), false);
-        EditorGUILayout.LabelField("", GUILayout.MinWidth(0));
-        _objectData.Right = (Sprite)EditorGUILayout.ObjectField(_objectData.Right, typeof(Sprite), false);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("", GUILayout.MinWidth(0));
-        _objectData.Down = (Sprite)EditorGUILayout.ObjectField(_objectData.Down, typeof(Sprite), false);
-        EditorGUILayout.LabelField("", GUILayout.MinWidth(0));
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.EndVertical();
+        Sprite[] newArr = new Sprite[size];
+        for (int i = 0; i < size; i++) {
+            if (i < arr.Length) {
+                newArr[i] = arr[i];
+            } else {
+                newArr[i] = null;
+            }
+        }
+        return newArr;
     }
 
-    private static void DrawBlendSprites()
+    private static Sprite[] DrawSpriteArray(Sprite[] arr)
     {
+        int len = arr.Length;
         EditorGUILayout.BeginVertical();
-
-        EditorGUILayout.BeginHorizontal();
-        _objectData.TopLeft = (Sprite)EditorGUILayout.ObjectField(_objectData.TopLeft, typeof(Sprite), false);
-        _objectData.Top = (Sprite)EditorGUILayout.ObjectField(_objectData.Top, typeof(Sprite), false);
-        _objectData.TopRight = (Sprite)EditorGUILayout.ObjectField(_objectData.TopRight, typeof(Sprite), false);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        _objectData.MiddleLeft = (Sprite)EditorGUILayout.ObjectField(_objectData.MiddleLeft, typeof(Sprite), false);
-        _objectData.Middle = (Sprite)EditorGUILayout.ObjectField(_objectData.Middle, typeof(Sprite), false);
-        _objectData.MiddleRight = (Sprite)EditorGUILayout.ObjectField(_objectData.MiddleRight, typeof(Sprite), false);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        _objectData.BottomLeft = (Sprite)EditorGUILayout.ObjectField(_objectData.BottomLeft, typeof(Sprite), false);
-        _objectData.Bottom = (Sprite)EditorGUILayout.ObjectField(_objectData.Bottom, typeof(Sprite), false);
-        _objectData.BottomRight = (Sprite)EditorGUILayout.ObjectField(_objectData.BottomRight, typeof(Sprite), false);
-        EditorGUILayout.EndHorizontal();
-
+        for (int i = 0; i < len; ++i) {
+            EditorGUILayout.BeginHorizontal();
+            if (len > 1) {
+                GUILayout.Label(i.ToString());
+            }
+            arr[i] = (Sprite)EditorGUILayout.ObjectField(arr[i], typeof(Sprite), false);
+            EditorGUILayout.EndHorizontal();
+        }
         EditorGUILayout.EndVertical();
+        return arr;
     }
 
     #endregion
