@@ -180,7 +180,7 @@ namespace GridTool.DataScripts.GUI
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Sorting Priority");
-            _objectData.SortingPriority = EditorGUILayout.IntField(_objectData.SortingPriority);
+            _objectData.SortingPriority = EditorGUILayout.DelayedIntField(_objectData.SortingPriority);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
@@ -258,7 +258,7 @@ namespace GridTool.DataScripts.GUI
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Animation Frames");
-            int animFrames = EditorGUILayout.IntField(_objectData.SpriteAnimationFrames);
+            int animFrames = EditorGUILayout.DelayedIntField(_objectData.SpriteAnimationFrames);
             EditorGUILayout.EndHorizontal();
 
             animFrames = Mathf.Clamp(animFrames, 1, _maxAnimFrames);

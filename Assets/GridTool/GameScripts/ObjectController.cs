@@ -64,6 +64,7 @@ namespace GridTool.GameScripts
         {
             _timer = 0;
             _animate = _object.SpriteAnimationFrames > 1;
+            _spriteRenderer.color = _object.MixColor;
             SetSprite(_animationFrame);
         }
 

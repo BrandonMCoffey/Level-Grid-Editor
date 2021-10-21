@@ -11,15 +11,15 @@ namespace GridTool.DataScripts
         public Color MixColor = Color.white;
 
         [Header("Sprite Properties")]
-        public ObjectSpriteType SpriteType;
-        public int SpriteAnimationFrames = 1;
+        [ReadOnly] public ObjectSpriteType SpriteType;
+        [ReadOnly] public int SpriteAnimationFrames = 1;
 
         [Header("Sprites")]
         public Texture2D Texture;
-        public Sprite[] Static = { null };
-        public Sprite[] Up = { null };
-        public Sprite[] Down = { null };
-        public Sprite[] Left = { null };
+        [HideInInspector] public Sprite[] Static = { null };
+        [HideInInspector] public Sprite[] Up = { null };
+        [HideInInspector] public Sprite[] Down = { null };
+        [HideInInspector] public Sprite[] Left = { null };
         // Sprite right == Static Sprite
     }
 

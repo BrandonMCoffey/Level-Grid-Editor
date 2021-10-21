@@ -8,8 +8,8 @@ namespace GridTool.DataScripts
     {
         [Header("Level Properties")]
         public string Name = "";
-        public int Width = 10;
-        public int Height = 5;
+        [ReadOnly] public int Width = 10;
+        [ReadOnly] public int Height = 5;
 
         [Header("Level")]
         public ObjectCollection Collection;
@@ -21,29 +21,21 @@ namespace GridTool.DataScripts
             return Level[w, h];
         }
 
+        public void CheckValid(int width, int height)
+        {
+            if (Width == width && Height == height) return;
+            Width = width;
+            Height = height;
+            CheckValid();
+        }
+
         public void CheckValid()
         {
             // If level does not exist
             if (Level == null) {
                 if (!string.IsNullOrEmpty(LevelString)) {
-                    // Read level string
-                    try {
-                        var arr = LevelString.Split('\n');
-                        var rowArr = arr[0].Split(',');
-                        int width = int.Parse(rowArr[0]);
-                        int height = int.Parse(rowArr[1]);
-
-                        Level = new LevelObjectData[width, height];
-                        for (int y = 0; y < height; y++) {
-                            rowArr = arr[y + 1].Split(',');
-                            for (int x = 0; x < width; x++) {
-                                Level[x, y] = new LevelObjectData(rowArr[x]);
-                            }
-                        }
+                    if (ReadFromString()) {
                         return;
-                    } catch {
-                        Console.WriteLine("Invalid level string");
-                        LevelString = "";
                     }
                 }
                 // Create empty level
@@ -72,12 +64,34 @@ namespace GridTool.DataScripts
             }
         }
 
-        public void CheckValid(int width, int height)
+        public bool ReadFromString()
         {
-            if (Width == width && Height == height) return;
-            Width = width;
-            Height = height;
-            CheckValid();
+            try {
+                var arr = LevelString.Split('\n');
+                var rowArr = arr[0].Split(',');
+                int width = rowArr.Length;
+                int height = arr.Length;
+
+                var newLevel = new LevelObjectData[width, height];
+                for (int y = 0; y < height; y++) {
+                    rowArr = arr[y].Split(',');
+                    for (int x = 0; x < width; x++) {
+                        if (x >= rowArr.Length || y > arr.Length) {
+                            newLevel[x, y] = new LevelObjectData();
+                        } else {
+                            newLevel[x, y] = new LevelObjectData(rowArr[x]);
+                        }
+                    }
+                }
+                Width = width;
+                Height = height;
+                Level = newLevel;
+                return true;
+            } catch {
+                Debug.LogWarning("Invalid level string");
+                LevelString = "";
+            }
+            return false;
         }
 
         public void SaveLevel()
@@ -86,13 +100,13 @@ namespace GridTool.DataScripts
                 Debug.Log("Error: Invalid Level");
                 return;
             }
-            string levelDataString = Width + "," + Height + "\n";
+            string levelDataString = "";
 
             for (int y = 0; y < Height; y++) {
                 for (int x = 0; x < Width; x++) {
                     levelDataString += Level[x, y].Name + (x == Width - 1 ? "" : ",");
                 }
-                levelDataString += "\n";
+                levelDataString += (y == Height - 1 ? "" : "\n");
             }
             LevelString = levelDataString;
         }

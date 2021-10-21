@@ -17,6 +17,18 @@ namespace Assets.GridTool.DataScripts.Editor
 
             EditorGUILayout.Separator();
             GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Save Changes from String", GUILayout.Height(20))) {
+                data.ReadFromString();
+            }
+            if (GUILayout.Button("Reset String", GUILayout.Height(20))) {
+                data.SaveLevel();
+            }
+            if (GUILayout.Button("Export to CSV", GUILayout.Height(20))) {
+            }
+            GUILayout.EndHorizontal();
+
+            EditorGUILayout.Separator();
+            GUILayout.BeginHorizontal();
             data.CheckValid();
             for (int w = 0; w < data.Width; w++) {
                 GUILayout.BeginVertical();

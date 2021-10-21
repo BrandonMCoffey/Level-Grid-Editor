@@ -130,7 +130,7 @@ namespace GridTool.DataScripts.GUI
         {
             GUILayout.BeginArea(_headerSection);
             GUIStyle titleStyle = new GUIStyle { fontSize = 25, stretchHeight = true, alignment = TextAnchor.MiddleLeft };
-            GUILayout.Label(" Level Designer", titleStyle);
+            GUILayout.Label(" Level Designer" + (string.IsNullOrEmpty(_levelData.Name) ? " " : " (" + _levelData.Name + ")"), titleStyle);
             GUILayout.EndArea();
         }
 
@@ -209,9 +209,9 @@ namespace GridTool.DataScripts.GUI
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Width:");
-            int w = EditorGUILayout.IntField(_levelData.Width, GUILayout.MinWidth(0));
+            int w = EditorGUILayout.DelayedIntField(_levelData.Width, GUILayout.MinWidth(0));
             GUILayout.Label("Height:");
-            int h = EditorGUILayout.IntField(_levelData.Height, GUILayout.MinWidth(0));
+            int h = EditorGUILayout.DelayedIntField(_levelData.Height, GUILayout.MinWidth(0));
             EditorGUILayout.EndHorizontal();
 
             w = Mathf.Clamp(w, 1, _maxWidth);
