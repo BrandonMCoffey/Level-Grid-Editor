@@ -97,4 +97,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 2106375854380644988}
   _object: {fileID: 0}
-  _framesPerSecond: 2
+  _framesPerSecond: 4

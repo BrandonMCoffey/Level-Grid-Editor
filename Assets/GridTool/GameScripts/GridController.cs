@@ -5,9 +5,11 @@ namespace GridTool.GameScripts
 {
     public class GridController : MonoBehaviour
     {
+        [SerializeField] private ObjectController _baseObjectController = null;
         [SerializeField] private float _gridSize = 1f;
         [SerializeField] private bool _centered = true;
-        [SerializeField] private ObjectController _baseObjectController = null;
+        [SerializeField] private bool _drawGrid = true;
+        [SerializeField] private Color _gridLineColor = Color.white;
 
         private int _width;
         private int _height;
@@ -53,20 +55,26 @@ namespace GridTool.GameScripts
             _objects[x, y].transform.localPosition = _bottomLeftCorner + new Vector2(_gridSize * (x + 0.5f), _gridSize * (y + 0.5f));
         }
 
+        private void OnDrawGizmos()
+        {
+            if (!_drawGrid) return;
+            Gizmos.color = _gridLineColor;
+            // Draw Rows
+            Gizmos.DrawLine(_bottomLeftCorner, _bottomLeftCorner + new Vector2(_width, 0));
+            for (float y = _bottomLeftCorner.y + 1; y < _bottomLeftCorner.y + _height; y++) {
+                Gizmos.DrawLine(new Vector2(_bottomLeftCorner.x, y), new Vector2(_bottomLeftCorner.x + _width, y));
+            }
+            Gizmos.DrawLine(_bottomLeftCorner + new Vector2(0, _height), _bottomLeftCorner + new Vector2(_width, _height));
+            // Draw Columns
+            Gizmos.DrawLine(_bottomLeftCorner, _bottomLeftCorner + new Vector2(0, _height));
+            for (float x = _bottomLeftCorner.x + 1; x < _bottomLeftCorner.x + _width; x++) {
+                Gizmos.DrawLine(new Vector2(x, _bottomLeftCorner.y), new Vector2(x, _bottomLeftCorner.y + _height));
+            }
+            Gizmos.DrawLine(_bottomLeftCorner + new Vector2(_width, 0), _bottomLeftCorner + new Vector2(_width, _height));
+        }
+
         public void DrawGrid()
         {
-            // Draw Rows
-            Debug.DrawLine(_bottomLeftCorner, _bottomLeftCorner + new Vector2(_width, 0), Color.yellow, 100f);
-            for (float y = _bottomLeftCorner.y + 1; y < _bottomLeftCorner.y + _height; y++) {
-                Debug.DrawLine(new Vector2(_bottomLeftCorner.x, y), new Vector2(_bottomLeftCorner.x + _width, y), Color.white, 100f);
-            }
-            Debug.DrawLine(_bottomLeftCorner + new Vector2(0, _height), _bottomLeftCorner + new Vector2(_width, _height), Color.yellow, 100f);
-            // Draw Columns
-            Debug.DrawLine(_bottomLeftCorner, _bottomLeftCorner + new Vector2(0, _height), Color.yellow, 100f);
-            for (float x = _bottomLeftCorner.x + 1; x < _bottomLeftCorner.x + _width; x++) {
-                Debug.DrawLine(new Vector2(x, _bottomLeftCorner.y), new Vector2(x, _bottomLeftCorner.y + _height), Color.white, 100f);
-            }
-            Debug.DrawLine(_bottomLeftCorner + new Vector2(_width, 0), _bottomLeftCorner + new Vector2(_width, _height), Color.yellow, 100f);
         }
     }
 }

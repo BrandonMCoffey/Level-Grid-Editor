@@ -175,7 +175,7 @@ namespace GridTool.DataScripts.GUI
                     GUILayout.BeginVertical();
                     for (int y = 0; y < _levelData.Height; y++) {
                         string objName = _levelData.Level[x, y].Name;
-                        if (GUILayout.Button(_levelData.Collection.GetTexture(objName), GUILayout.Width(size), GUILayout.Height(size))) {
+                        if (GUILayout.RepeatButton(_levelData.Collection.GetTexture(objName), GUILayout.Width(size), GUILayout.Height(size))) {
                             if (_selectedObject != null) {
                                 _levelData.Level[x, y].Name = _selectedObject.Name;
                             } else {

@@ -18,8 +18,8 @@ namespace GridTool.DataScripts
         public Texture2D Texture;
         [HideInInspector] public Sprite[] Static = { null };
         [HideInInspector] public Sprite[] Up = { null };
-        [HideInInspector] public Sprite[] Down = { null };
         [HideInInspector] public Sprite[] Left = { null };
+        [HideInInspector] public Sprite[] Down = { null };
         // Sprite right == Static Sprite
     }
 

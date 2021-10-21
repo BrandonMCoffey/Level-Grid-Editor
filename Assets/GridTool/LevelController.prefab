@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0561171467b9e9349ad8d61656910320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelToLoad: {fileID: 11400000, guid: d7253a4c3939b6c4aaa13ff578e64443, type: 2}
+  _levelToLoad: {fileID: 11400000, guid: fed87b720b5075849ab9c00c3025fe65, type: 2}
 --- !u!114 &3402671086152896506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57,6 +57,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4781abe6aaba45341b205a65061417c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _baseObjectController: {fileID: 7609297573304180376, guid: aab09a2b98651284cb5ba5312af27821, type: 3}
   _gridSize: 1
   _centered: 1
-  _baseObjectController: {fileID: 7609297573304180376, guid: aab09a2b98651284cb5ba5312af27821, type: 3}
+  _drawGrid: 1
+  _gridLineColor: {r: 1, g: 1, b: 1, a: 0.15686275}

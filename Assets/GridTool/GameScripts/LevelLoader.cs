@@ -10,11 +10,17 @@ namespace GridTool.GameScripts
 
         private GridController _grid;
 
-        private void Awake()
+        private GridController Grid
         {
-            _grid = GetComponent<GridController>();
-            if (_grid == null) {
-                _grid = gameObject.AddComponent<GridController>();
+            get
+            {
+                if (_grid == null) {
+                    _grid = GetComponent<GridController>();
+                    if (_grid == null) {
+                        _grid = gameObject.AddComponent<GridController>();
+                    }
+                }
+                return _grid;
             }
         }
 
@@ -31,7 +37,7 @@ namespace GridTool.GameScripts
         public void Load(LevelData level)
         {
             level.CheckValid();
-            _grid.CreateGrid(level.Width, level.Height);
+            Grid.CreateGrid(level.Width, level.Height);
             for (int x = 0; x < level.Width; x++) {
                 for (int y = 0; y < level.Height; y++) {
                     var levelObject = level.Level[x, y].Name;
@@ -39,7 +45,7 @@ namespace GridTool.GameScripts
 
                     var obj = level.Collection.GetObject(levelObject);
                     if (obj != null) {
-                        _grid.AddObject(obj, x, y);
+                        Grid.AddObject(obj, x, y);
                     } else {
                         Debug.LogWarning("Could not find object '" + levelObject + "' in collection on level '" + level.Name + "'", gameObject);
                     }

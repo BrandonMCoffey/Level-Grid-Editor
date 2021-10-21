@@ -104,7 +104,7 @@ namespace GridTool.DataScripts
 
             for (int y = 0; y < Height; y++) {
                 for (int x = 0; x < Width; x++) {
-                    levelDataString += Level[x, y].Name + (x == Width - 1 ? "" : ",");
+                    levelDataString += Level[x, y].DisplayName + (x == Width - 1 ? "" : ",");
                 }
                 levelDataString += (y == Height - 1 ? "" : "\n");
             }

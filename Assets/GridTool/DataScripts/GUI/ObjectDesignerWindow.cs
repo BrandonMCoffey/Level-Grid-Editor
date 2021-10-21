@@ -214,8 +214,8 @@ namespace GridTool.DataScripts.GUI
                     _overrideData.SpriteAnimationFrames = _objectData.SpriteAnimationFrames;
                     _overrideData.Static = _objectData.Static;
                     _overrideData.Up = _objectData.Up;
-                    _overrideData.Down = _objectData.Down;
                     _overrideData.Left = _objectData.Left;
+                    _overrideData.Down = _objectData.Down;
                 }
                 EditorGUILayout.ObjectField(_overrideData, typeof(ObjectData), false);
             } else {
@@ -266,8 +266,8 @@ namespace GridTool.DataScripts.GUI
                 _objectData.SpriteAnimationFrames = animFrames;
                 _objectData.Static = ResizeSpriteArray(_objectData.Static, animFrames);
                 _objectData.Up = ResizeSpriteArray(_objectData.Up, animFrames);
-                _objectData.Down = ResizeSpriteArray(_objectData.Down, animFrames);
                 _objectData.Left = ResizeSpriteArray(_objectData.Left, animFrames);
+                _objectData.Down = ResizeSpriteArray(_objectData.Down, animFrames);
             }
 
             EditorGUILayout.Separator();
@@ -277,17 +277,17 @@ namespace GridTool.DataScripts.GUI
                     _objectData.Static = DrawSpriteArray(_objectData.Static);
                     break;
                 case ObjectSpriteType.Directional:
+                    EditorGUILayout.Separator();
+                    GUILayout.Label("Facing Right");
+                    _objectData.Static = DrawSpriteArray(_objectData.Static);
                     GUILayout.Label("Facing Upwards");
                     _objectData.Up = DrawSpriteArray(_objectData.Up);
-                    EditorGUILayout.Separator();
-                    GUILayout.Label("Facing Downwards");
-                    _objectData.Down = DrawSpriteArray(_objectData.Down);
                     EditorGUILayout.Separator();
                     GUILayout.Label("Facing Left");
                     _objectData.Left = DrawSpriteArray(_objectData.Left);
                     EditorGUILayout.Separator();
-                    GUILayout.Label("Facing Right");
-                    _objectData.Static = DrawSpriteArray(_objectData.Static);
+                    GUILayout.Label("Facing Downwards");
+                    _objectData.Down = DrawSpriteArray(_objectData.Down);
                     break;
             }
 

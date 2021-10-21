@@ -7,7 +7,7 @@ namespace GridTool.DataScripts
 
         public LevelObjectData(string name)
         {
-            Name = name;
+            Name = name == "-" ? "" : name;
         }
     }
 }
