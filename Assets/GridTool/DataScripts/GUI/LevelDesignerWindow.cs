@@ -27,8 +27,8 @@ namespace GridTool.DataScripts.GUI
         private static int _minPixels = 32;
         private static int _maxPixels = 128;
 
-        private static int _maxWidth = 20;
-        private static int _maxHeight = 16;
+        private static int _maxWidth = 32;
+        private static int _maxHeight = 24;
 
         #region Initialization
 

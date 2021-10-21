@@ -23,7 +23,7 @@ namespace GridTool.DataScripts.GUI
 
         private static string _lastPath = "";
 
-        private static int _maxAnimFrames = 5;
+        private static int _maxAnimFrames = 12;
 
         #region Initialization
 
