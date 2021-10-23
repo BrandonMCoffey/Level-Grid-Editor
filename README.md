@@ -25,6 +25,7 @@ An example of a level running in game
 
 ![Example: Baba Is You](https://raw.githubusercontent.com/BrandonMCoffey/Level-Grid-Editor/main/Source%20Files/baba-level-in-game.png)
 
+Project Info:
 
 ### ATCM 4368 - Scripting for Games II - Adam Chandler
 
